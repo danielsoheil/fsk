@@ -1,0 +1,14 @@
+target="$1"
+github="$2"
+if [[ "$target" = "" ]]
+then
+  echo "invalid ssh target, use fsk -h"
+else
+  if [[ "$github" = "" ]]
+  then
+    cat ~/.ssh/id_rsa.pub | ssh $target "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+  else
+    sudo apt install jq -y > /dev/null
+    curl -sS https://api.github.com/users/$github/keys | jq '.[].key' --raw-output | ssh $target "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+  fi
+fi
